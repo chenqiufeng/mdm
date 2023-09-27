@@ -380,7 +380,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     public Boolean dataSourceTest() {
         try {
             DatabaseMetaData metaData = connection.getMetaData();
-            if (metaData.getDatabaseProductName().length() > 0) {
+            if (!metaData.getDatabaseProductName().isEmpty()) {
                 return true;
             }
         } catch (SQLException e) {
