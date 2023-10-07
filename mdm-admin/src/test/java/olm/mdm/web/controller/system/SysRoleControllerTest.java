@@ -4,6 +4,7 @@ import lombok.val;
 import olm.mdm.common.annotation.DataSource;
 import olm.mdm.common.core.domain.entity.SysRole;
 import olm.mdm.common.enums.DataSourceType;
+import olm.mdm.framework.datasource.DynamicDataSourceContextHolder;
 import olm.mdm.system.service.ISysRoleService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,8 @@ class SysRoleControllerTest {
     @Test
     @DataSource(value = DataSourceType.BIZ)
     void listBiz() {
-        List<SysRole> list =  roleService.selectRoleAll();
+        DynamicDataSourceContextHolder.setDataSourceType(DataSourceType.BIZ.name());
+        List<SysRole> list = roleService.selectRoleAll();
         System.out.println("list.size: " + list.size());
     }
 }
