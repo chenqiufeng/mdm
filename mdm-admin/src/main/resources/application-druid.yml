@@ -15,7 +15,14 @@ spring:
                 enabled: false
                 url: 
                 username: 
-                password: 
+                password:
+            # 业务主数据-数据源
+            biz:
+                # 从数据源开关/默认关闭
+                enabled: true
+                url: jdbc:mysql://127.0.0.1:3306/mdm-biz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                username: root
+                password: root
             # 初始连接数
             initialSize: 5
             # 最小连接池数量
