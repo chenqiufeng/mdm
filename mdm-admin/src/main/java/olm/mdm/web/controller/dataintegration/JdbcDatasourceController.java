@@ -1,34 +1,25 @@
 package olm.mdm.web.controller.dataintegration;
 
-import javax.servlet.http.HttpServletResponse;
-
-import io.swagger.annotations.ApiOperation;
-import olm.mdm.common.utils.poi.ExcelUtil;
-import olm.mdm.dataintegration.domain.JdbcDatasource;
-import olm.mdm.dataintegration.service.IJdbcDatasourceService;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import olm.mdm.common.annotation.Log;
 import olm.mdm.common.core.controller.BaseController;
 import olm.mdm.common.core.domain.AjaxResult;
-import olm.mdm.common.enums.BusinessType;
 import olm.mdm.common.core.page.TableDataInfo;
+import olm.mdm.common.enums.BusinessType;
+import olm.mdm.common.utils.poi.ExcelUtil;
+import olm.mdm.dataintegration.domain.JdbcDatasource;
+import olm.mdm.dataintegration.service.IJdbcDatasourceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
 
 /**
  * jdbc数据源配置Controller
- * 
+ *
  * @author xugang
  * @date 2023-09-26
  */
@@ -101,7 +92,7 @@ public class JdbcDatasourceController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('dataintegration:datasource:remove')")
     @Log(title = "jdbc数据源配置", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
+    @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(jdbcDatasourceService.deleteJdbcDatasourceByIds(ids));

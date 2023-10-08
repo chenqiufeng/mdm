@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>mdm</artifactId>
+        <groupId>olm.mdm</groupId>
+        <version>3.8.6</version>
+    </parent>
+    <artifactId>mdm-executor</artifactId>
+    <packaging>jar</packaging>
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- SpringBoot的依赖配置-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>2.5.15</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 通用工具-->
+        <dependency>
+            <groupId>olm.mdm</groupId>
+            <artifactId>mdm-common</artifactId>
+        </dependency>
+        <!-- 核心模块-->
+        <dependency>
+            <groupId>olm.mdm</groupId>
+            <artifactId>mdm-framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>olm.mdm</groupId>
+            <artifactId>mdm-rpc</artifactId>
+            <version>3.8.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>olm.mdm</groupId>
+            <artifactId>mdm-job</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.yml</exclude>
+                        <exclude>**/*.xml</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>assemble</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <!-- install -->
+                        <phase>install</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <attach>false</attach>
+                    <descriptors>
+                        <descriptor>${basedir}/src/main/assembly/deploy.xml</descriptor>
+                    </descriptors>
+                    <finalName>${project.artifactId}_${project.version}_1</finalName>
+                    <outputDirectory>${project.parent.basedir}/packages</outputDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

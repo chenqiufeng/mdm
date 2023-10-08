@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="olm.mdm.job.mapper.JobGroupMapper">
+
+    <resultMap id="JobGroup" type="JobGroup">
+        <result column="id" property="id"/>
+        <result column="app_name" property="appName"/>
+        <result column="title" property="title"/>
+        <result column="order" property="order"/>
+        <result column="address_type" property="addressType"/>
+        <result column="address_list" property="addressList"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+		t.id,
+		t.app_name,
+		t.title,
+		t.`order`,
+		t.address_type,
+		t.address_list
+	</sql>
+
+    <select id="findAll" resultMap="JobGroup">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM job_group AS t
+        ORDER BY t.order ASC
+    </select>
+
+    <select id="find" resultMap="JobGroup">
+        select
+        id,app_name,title,`order`,address_type,address_list
+        from job_group
+        <where>
+            <if test="appName != null and appName != ''">
+                and app_name like concat('%',#{appName,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="title != null and title != ''">
+                and title like concat('%',#{title,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="addressList != null and addressList != ''">
+                and address_list like concat('%',#{addressList,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findByAddressType" parameterType="java.lang.Integer" resultMap="JobGroup">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM job_group AS t
+        WHERE t.address_type = #{addressType}
+        ORDER BY t.order ASC
+    </select>
+
+    <insert id="save" parameterType="JobGroup" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO job_group ( `app_name`, `title`, `order`, `address_type`, `address_list`)
+		values ( #{appName}, #{title}, #{order}, #{addressType}, #{addressList});
+	</insert>
+
+    <update id="update" parameterType="JobGroup">
+		UPDATE job_group
+		SET `app_name` = #{appName},
+			`title` = #{title},
+			`order` = #{order},
+			`address_type` = #{addressType},
+			`address_list` = #{addressList}
+		WHERE id = #{id}
+	</update>
+
+    <delete id="remove" parameterType="java.lang.Integer">
+		DELETE FROM job_group
+		WHERE id = #{id}
+	</delete>
+
+    <select id="load" parameterType="java.lang.Integer" resultMap="JobGroup">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM job_group AS t
+        WHERE t.id = #{id}
+    </select>
+
+    <sql id="selectJobGroupVo">
+        select id, app_name, title, order, address_type, address_list from job_group
+    </sql>
+
+    <select id="selectJobGroupList" parameterType="JobGroup" resultMap="JobGroup">
+        <include refid="selectJobGroupVo"/>
+        <where>
+            <if test="appName != null  and appName != ''"> and app_name like concat('%', #{appName}, '%')</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="order != null "> and order = #{order}</if>
+            <if test="addressType != null "> and address_type = #{addressType}</if>
+            <if test="addressList != null  and addressList != ''"> and address_list = #{addressList}</if>
+        </where>
+    </select>
+
+    <select id="selectJobGroupById" parameterType="Long" resultMap="JobGroup">
+        <include refid="selectJobGroupVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertJobGroup" parameterType="JobGroup" useGeneratedKeys="true" keyProperty="id">
+        insert into job_group
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appName != null and appName != ''">app_name,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="order != null">order,</if>
+            <if test="addressType != null">address_type,</if>
+            <if test="addressList != null">address_list,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appName != null and appName != ''">#{appName},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="order != null">#{order},</if>
+            <if test="addressType != null">#{addressType},</if>
+            <if test="addressList != null">#{addressList},</if>
+        </trim>
+    </insert>
+
+    <update id="updateJobGroup" parameterType="JobGroup">
+        update job_group
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="appName != null and appName != ''">app_name = #{appName},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="order != null">order = #{order},</if>
+            <if test="addressType != null">address_type = #{addressType},</if>
+            <if test="addressList != null">address_list = #{addressList},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteJobGroupById" parameterType="Long">
+        delete from job_group where id = #{id}
+    </delete>
+
+    <delete id="deleteJobGroupByIds" parameterType="String">
+        delete from job_group where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

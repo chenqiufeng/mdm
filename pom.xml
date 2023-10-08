@@ -37,6 +37,18 @@
         <mongo-java-driver.version>3.4.2</mongo-java-driver.version>
         <spring.version>4.3.25.RELEASE</spring.version>
         <lombok.version>1.18.10</lombok.version>
+        <hadoop.version>2.7.3</hadoop.version>
+        <hive.jdbc.version>2.1.0</hive.jdbc.version>
+        <hbase.version>1.3.0</hbase.version>
+        <mongo-java-driver.version>3.4.2</mongo-java-driver.version>
+        <spring.version>4.3.25.RELEASE</spring.version>
+        <lombok.version>1.18.14</lombok.version>
+        <netty.version>4.1.43.Final</netty.version>
+        <hessian.version>4.0.63</hessian.version>
+        <slf4j-api.version>1.7.28</slf4j-api.version>
+        <groovy.version>2.5.8</groovy.version>
+        <jna.version>4.1.0</jna.version>
+        <oshi.core.version>3.5.0</oshi.core.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -184,6 +196,13 @@
                 <version>${mdm.version}</version>
             </dependency>
 
+            <!-- 任务模块-->
+            <dependency>
+                <groupId>olm.mdm</groupId>
+                <artifactId>mdm-job</artifactId>
+                <version>${mdm.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -195,6 +214,9 @@
         <module>mdm-generator</module>
         <module>mdm-common</module>
         <module>mdm-dataintegration</module>
+        <module>mdm-job</module>
+        <module>mdm-rpc</module>
+        <module>mdm-executor</module>
     </modules>
     <packaging>pom</packaging>
 
