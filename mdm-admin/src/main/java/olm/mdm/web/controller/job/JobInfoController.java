@@ -1,26 +1,30 @@
 package olm.mdm.web.controller.job;
 
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-
-import olm.mdm.common.utils.poi.ExcelUtil;
-import olm.mdm.job.domain.JobInfo;
-import olm.mdm.job.service.IJobInfoService;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
+import olm.mdm.common.annotation.Anonymous;
 import olm.mdm.common.annotation.Log;
 import olm.mdm.common.core.controller.BaseController;
 import olm.mdm.common.core.domain.AjaxResult;
-import olm.mdm.common.enums.BusinessType;
+import olm.mdm.common.core.domain.dto.TriggerJobDto;
 import olm.mdm.common.core.page.TableDataInfo;
+import olm.mdm.common.enums.BusinessType;
+import olm.mdm.common.utils.poi.ExcelUtil;
+import olm.mdm.framework.core.cron.CronExpression;
+import olm.mdm.framework.core.thread.JobTriggerPoolHelper;
+import olm.mdm.framework.core.trigger.TriggerTypeEnum;
+import olm.mdm.framework.util.DateUtil;
+import olm.mdm.framework.util.I18nUtil;
+import olm.mdm.job.domain.JobInfo;
+import olm.mdm.job.service.IJobInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 定时任务Controller
@@ -30,8 +34,7 @@ import olm.mdm.common.core.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/job/info")
-public class JobInfoController extends BaseController
-{
+public class JobInfoController extends BaseController {
     @Autowired
     private IJobInfoService jobInfoService;
 
@@ -40,8 +43,7 @@ public class JobInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('job:info:list')")
     @GetMapping("/list")
-    public TableDataInfo list(JobInfo jobInfo)
-    {
+    public TableDataInfo list(JobInfo jobInfo) {
         startPage();
         List<JobInfo> list = jobInfoService.selectJobInfoList(jobInfo);
         return getDataTable(list);
@@ -53,8 +55,7 @@ public class JobInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('job:info:export')")
     @Log(title = "定时任务", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, JobInfo jobInfo)
-    {
+    public void export(HttpServletResponse response, JobInfo jobInfo) {
         List<JobInfo> list = jobInfoService.selectJobInfoList(jobInfo);
         ExcelUtil<JobInfo> util = new ExcelUtil<JobInfo>(JobInfo.class);
         util.exportExcel(response, list, "定时任务数据");
@@ -65,8 +66,7 @@ public class JobInfoController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('job:info:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(jobInfoService.selectJobInfoById(id));
     }
 
@@ -76,8 +76,7 @@ public class JobInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('job:info:add')")
     @Log(title = "定时任务", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody JobInfo jobInfo)
-    {
+    public AjaxResult add(@RequestBody JobInfo jobInfo) {
         return toAjax(jobInfoService.insertJobInfo(jobInfo));
     }
 
@@ -87,8 +86,7 @@ public class JobInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('job:info:edit')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody JobInfo jobInfo)
-    {
+    public AjaxResult edit(@RequestBody JobInfo jobInfo) {
         return toAjax(jobInfoService.updateJobInfo(jobInfo));
     }
 
@@ -98,8 +96,56 @@ public class JobInfoController extends BaseController
     @PreAuthorize("@ss.hasPermi('job:info:remove')")
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(jobInfoService.deleteJobInfoByIds(ids));
+    }
+
+    @PostMapping("/stop")
+    @ApiOperation("停止任务")
+    @Anonymous
+    public AjaxResult pause(Long id) {
+        return toAjax(jobInfoService.stop(id));
+    }
+
+    @PostMapping("/start")
+    @ApiOperation("开启任务")
+    @Anonymous
+    public AjaxResult start(Long id) {
+        return toAjax(jobInfoService.start(id));
+    }
+
+    @PostMapping( "/trigger")
+    @ApiOperation("触发任务")
+    @Anonymous
+    public AjaxResult triggerJob(@RequestBody TriggerJobDto dto) {
+        // force cover job param
+        String executorParam = dto.getExecutorParam();
+        if (executorParam == null) {
+            executorParam = "";
+        }
+        JobTriggerPoolHelper.trigger(dto.getJobId(), TriggerTypeEnum.MANUAL, -1, null, executorParam);
+        return AjaxResult.success();
+    }
+
+    @GetMapping("/nextTriggerTime")
+    @ApiOperation("获取近5次触发时间")
+    @Anonymous
+    public AjaxResult nextTriggerTime(String cron) {
+        List<String> result = new ArrayList<>();
+        try {
+            CronExpression cronExpression = new CronExpression(cron);
+            Date lastTime = new Date();
+            for (int i = 0; i < 5; i++) {
+                lastTime = cronExpression.getNextValidTimeAfter(lastTime);
+                if (lastTime != null) {
+                    result.add(DateUtil.formatDateTime(lastTime));
+                } else {
+                    break;
+                }
+            }
+        } catch (ParseException e) {
+            return AjaxResult.error(I18nUtil.getString("jobinfo_field_cron_invalid"));
+        }
+        return AjaxResult.success(result);
     }
 }

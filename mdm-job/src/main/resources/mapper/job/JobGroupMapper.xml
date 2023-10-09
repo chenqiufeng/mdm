@@ -45,7 +45,7 @@
         </where>
     </select>
 
-    <select id="findByAddressType" parameterType="java.lang.Integer" resultMap="JobGroup">
+    <select id="findByAddressType" parameterType="java.lang.Long" resultMap="JobGroup">
         SELECT
         <include refid="Base_Column_List"/>
         FROM job_group AS t
@@ -68,12 +68,12 @@
 		WHERE id = #{id}
 	</update>
 
-    <delete id="remove" parameterType="java.lang.Integer">
+    <delete id="remove" parameterType="java.lang.Long">
 		DELETE FROM job_group
 		WHERE id = #{id}
 	</delete>
 
-    <select id="load" parameterType="java.lang.Integer" resultMap="JobGroup">
+    <select id="load" parameterType="java.lang.Long" resultMap="JobGroup">
         SELECT
         <include refid="Base_Column_List"/>
         FROM job_group AS t

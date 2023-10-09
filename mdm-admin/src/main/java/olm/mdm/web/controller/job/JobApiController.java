@@ -1,5 +1,6 @@
 package olm.mdm.web.controller.job;
 
+import olm.mdm.common.annotation.Anonymous;
 import olm.mdm.framework.core.biz.AdminBiz;
 import olm.mdm.framework.core.biz.model.HandleCallbackParam;
 import olm.mdm.framework.core.biz.model.HandleProcessCallbackParam;
@@ -22,6 +23,7 @@ import java.util.List;
 /**
  * Created by xuxueli on 17/5/10.
  */
+@Anonymous
 @RestController
 @RequestMapping("/api")
 public class JobApiController {

@@ -123,6 +123,8 @@ public class JobTrigger {
         jobLog.setJobId(jobInfo.getId());
         jobLog.setTriggerTime(triggerTime);
         jobLog.setJobDesc(jobInfo.getJobDesc());
+        jobLog.setTriggerCode(0L);
+        jobLog.setHandleCode(0L);
 
         JobAdminConfig.getAdminConfig().getJobLogMapper().save(jobLog);
         logger.debug(">>>>>>>>>>> datax-web trigger start, jobId:{}", jobLog.getId());
