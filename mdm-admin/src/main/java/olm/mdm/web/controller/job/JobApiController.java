@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Anonymous
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/dev-api/jobApi")
 public class JobApiController {
     @Autowired
     private IJobRegistryService jobRegistryService;

@@ -1,5 +1,7 @@
 package olm.mdm.web.controller.dataintegration;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import olm.mdm.common.annotation.Log;
 import olm.mdm.common.core.controller.BaseController;
 import olm.mdm.common.core.domain.AjaxResult;
@@ -24,6 +26,7 @@ import java.util.List;
  * @date 2023-09-26
  */
 @RestController
+@Api(tags = "数据源配置控制器")
 @RequestMapping("/dataintegration/datasource")
 public class JdbcDatasourceController extends BaseController
 {
@@ -34,6 +37,7 @@ public class JdbcDatasourceController extends BaseController
      * 查询jdbc数据源配置列表
      */
     @PreAuthorize("@ss.hasPermi('dataintegration:datasource:list')")
+    @ApiOperation("查询jdbc数据源配置列表")
     @GetMapping("/list")
     public TableDataInfo list(JdbcDatasource jdbcDatasource)
     {
@@ -47,6 +51,7 @@ public class JdbcDatasourceController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('dataintegration:datasource:export')")
     @Log(title = "jdbc数据源配置", businessType = BusinessType.EXPORT)
+    @ApiOperation("导出jdbc数据源配置列表")
     @PostMapping("/export")
     public void export(HttpServletResponse response, JdbcDatasource jdbcDatasource)
     {
@@ -59,6 +64,7 @@ public class JdbcDatasourceController extends BaseController
      * 获取jdbc数据源配置详细信息
      */
     @PreAuthorize("@ss.hasPermi('dataintegration:datasource:query')")
+    @ApiOperation("获取jdbc数据源配置详细信息")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -70,6 +76,7 @@ public class JdbcDatasourceController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('dataintegration:datasource:add')")
     @Log(title = "jdbc数据源配置", businessType = BusinessType.INSERT)
+    @ApiOperation("新增jdbc数据源配置")
     @PostMapping
     public AjaxResult add(@RequestBody JdbcDatasource jdbcDatasource)
     {
@@ -81,6 +88,7 @@ public class JdbcDatasourceController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('dataintegration:datasource:edit')")
     @Log(title = "jdbc数据源配置", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改jdbc数据源配置")
     @PutMapping
     public AjaxResult edit(@RequestBody JdbcDatasource jdbcDatasource)
     {
@@ -92,6 +100,7 @@ public class JdbcDatasourceController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('dataintegration:datasource:remove')")
     @Log(title = "jdbc数据源配置", businessType = BusinessType.DELETE)
+    @ApiOperation("删除jdbc数据源配置")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
@@ -105,6 +114,7 @@ public class JdbcDatasourceController extends BaseController
      */
     @PostMapping("/test")
     @Log(title = "jdbc数据源配置", businessType = BusinessType.OTHER)
+    @ApiOperation("测试数据源")
     public AjaxResult dataSourceTest (@RequestBody JdbcDatasource jdbcDatasource) throws IOException {
         return toAjax(jdbcDatasourceService.dataSourceTest(jdbcDatasource));
     }

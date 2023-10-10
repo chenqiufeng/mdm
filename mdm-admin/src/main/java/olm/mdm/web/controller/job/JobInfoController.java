@@ -1,5 +1,6 @@
 package olm.mdm.web.controller.job;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import olm.mdm.common.annotation.Anonymous;
 import olm.mdm.common.annotation.Log;
@@ -33,6 +34,7 @@ import java.util.List;
  * @date 2023-09-28
  */
 @RestController
+@Api(tags = "定时任务控制器")
 @RequestMapping("/job/info")
 public class JobInfoController extends BaseController {
     @Autowired
@@ -42,6 +44,7 @@ public class JobInfoController extends BaseController {
      * 查询定时任务列表
      */
     @PreAuthorize("@ss.hasPermi('job:info:list')")
+    @ApiOperation("查询定时任务列表")
     @GetMapping("/list")
     public TableDataInfo list(JobInfo jobInfo) {
         startPage();
@@ -54,6 +57,7 @@ public class JobInfoController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('job:info:export')")
     @Log(title = "定时任务", businessType = BusinessType.EXPORT)
+    @ApiOperation("导出定时任务列表")
     @PostMapping("/export")
     public void export(HttpServletResponse response, JobInfo jobInfo) {
         List<JobInfo> list = jobInfoService.selectJobInfoList(jobInfo);
@@ -65,6 +69,7 @@ public class JobInfoController extends BaseController {
      * 获取定时任务详细信息
      */
     @PreAuthorize("@ss.hasPermi('job:info:query')")
+    @ApiOperation("获取定时任务详细信息")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return success(jobInfoService.selectJobInfoById(id));
@@ -75,6 +80,7 @@ public class JobInfoController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('job:info:add')")
     @Log(title = "定时任务", businessType = BusinessType.INSERT)
+    @ApiOperation("新增定时任务")
     @PostMapping
     public AjaxResult add(@RequestBody JobInfo jobInfo) {
         return toAjax(jobInfoService.insertJobInfo(jobInfo));
@@ -85,6 +91,7 @@ public class JobInfoController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('job:info:edit')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改定时任务")
     @PutMapping
     public AjaxResult edit(@RequestBody JobInfo jobInfo) {
         return toAjax(jobInfoService.updateJobInfo(jobInfo));
@@ -95,6 +102,7 @@ public class JobInfoController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('job:info:remove')")
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
+    @ApiOperation("删除定时任务")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(jobInfoService.deleteJobInfoByIds(ids));
