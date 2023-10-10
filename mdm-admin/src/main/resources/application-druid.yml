@@ -6,9 +6,9 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://127.0.0.1:3306/mdm?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:mysql://site.notemi.cn:3306/mdm?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
-                password: root
+                password: 123123
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
@@ -20,9 +20,9 @@ spring:
             biz:
                 # 从数据源开关/默认关闭
                 enabled: true
-                url: jdbc:mysql://127.0.0.1:3306/mdm-biz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:mysql://site.notemi.cn:3306/mdm-biz?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: root
-                password: root
+                password: 123123
             # 初始连接数
             initialSize: 5
             # 最小连接池数量
@@ -66,3 +66,20 @@ spring:
                 wall:
                     config:
                         multi-statement-allow: true
+    flyway:
+        enabled: true # Enable flyway.
+        cleanDisabled: true # 禁用 Flyway 所有的 drop 相关的逻辑。
+        locations: classpath:db/master # 这里写主库路径，然后在配置类中转换
+        check-location: false # Check that migration scripts location exists.
+        baseline-description: #
+        baseline-version: 0 # version to start migration
+        out-of-order: true # 是否容许不按顺序迁移 开发建议 true  生产建议 false
+        #clean-on-validation-error: #
+        #encoding: UTF-8
+        #ignore-failed-future-migration: #
+        #init-sqls: # SQL statements to execute to initialize a connection immediately after obtaining it.
+        sql-migration-prefix: V #
+        #sql-migration-separator: #
+        table: "migrations" #
+        validate-on-migrate: true # 迁移前校验 SQL 文件是否存在问题
+        baseline-on-migrate: true # 非空数据库初始化Flyway时需要打开此开关进行Baseline操作
