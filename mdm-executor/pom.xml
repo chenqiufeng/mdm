@@ -61,38 +61,19 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.15</version>
                 <configuration>
-                    <excludes>
-                        <exclude>**/*.yml</exclude>
-                        <exclude>**/*.xml</exclude>
-                    </excludes>
+                    <fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2.1</version>
                 <executions>
                     <execution>
-                        <id>assemble</id>
                         <goals>
-                            <goal>single</goal>
+                            <goal>repackage</goal>
                         </goals>
-                        <!-- install -->
-                        <phase>install</phase>
                     </execution>
                 </executions>
-                <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <attach>false</attach>
-                    <descriptors>
-                        <descriptor>${basedir}/src/main/assembly/deploy.xml</descriptor>
-                    </descriptors>
-                    <finalName>${project.artifactId}_${project.version}_1</finalName>
-                    <outputDirectory>${project.parent.basedir}/packages</outputDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>

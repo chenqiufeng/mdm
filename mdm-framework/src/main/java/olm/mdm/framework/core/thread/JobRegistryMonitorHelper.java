@@ -29,7 +29,7 @@ public class JobRegistryMonitorHelper {
 			while (!toStop) {
 				try {
 					// auto registry group
-					List<JobGroup> groupList = JobAdminConfig.getAdminConfig().getJobGroupMapper().findByAddressType(0);
+					List<JobGroup> groupList = JobAdminConfig.getAdminConfig().getJobGroupMapper().findByAddressType(0L);
 					if (groupList!=null && !groupList.isEmpty()) {
 
 						// remove dead address (admin/executor)
