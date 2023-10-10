@@ -179,6 +179,13 @@
                 <version>${mdm.version}</version>
             </dependency>
 
+            <!-- 主数据模型管理-->
+            <dependency>
+                <groupId>olm.mdm</groupId>
+                <artifactId>mdm-data-model</artifactId>
+                <version>${mdm.version}</version>
+            </dependency>
+
             <!-- 通用工具-->
             <dependency>
                 <groupId>olm.mdm</groupId>
@@ -197,6 +204,7 @@
         <module>mdm-generator</module>
         <module>mdm-common</module>
         <module>mdm-dataintegration</module>
+        <module>mdm-data-model</module>
     </modules>
     <packaging>pom</packaging>
 

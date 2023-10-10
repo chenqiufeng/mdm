@@ -65,6 +65,12 @@
             <artifactId>mdm-dataintegration</artifactId>
         </dependency>
 
+        <!-- 数据集成模块-->
+        <dependency>
+            <groupId>olm.mdm</groupId>
+            <artifactId>mdm-data-model</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
