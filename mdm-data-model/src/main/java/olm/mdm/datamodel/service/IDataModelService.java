@@ -2,7 +2,7 @@ package olm.mdm.datamodel.service;
 
 import java.util.List;
 import com.baomidou.mybatisplus.extension.service.IService;
-import olm.mdm.datamodel.domain.DataModel;
+import olm.mdm.datamodel.domain.entity.DataModel;
 
 /**
  * 主数据模型Service接口

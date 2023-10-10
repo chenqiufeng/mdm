@@ -6,7 +6,7 @@ import olm.mdm.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import olm.mdm.datamodel.mapper.DataModelMapper;
-import olm.mdm.datamodel.domain.DataModel;
+import olm.mdm.datamodel.domain.entity.DataModel;
 import olm.mdm.datamodel.service.IDataModelService;
 
 /**

@@ -1,4 +1,4 @@
-package olm.mdm.datamodel.domain;
+package olm.mdm.datamodel.domain.entity;
 
 import olm.mdm.common.annotation.Excel;
 import io.swagger.annotations.ApiModel;
@@ -22,40 +22,32 @@ public class DataModel extends BaseEntity {
 
     private static final long serialVersionUID=1L;
 
-
     @TableId(type = IdType.AUTO)
     private Long id;
-
 
     @Excel(name = "模型名称")
     @ApiModelProperty("模型名称")
     private String name;
 
-
     @Excel(name = "模型编码")
     @ApiModelProperty("模型编码")
     private String code;
-
 
     @Excel(name = "描述")
     @ApiModelProperty("描述")
     private String description;
 
-
     @Excel(name = "状态")
     @ApiModelProperty("状态")
     private String status;
-
 
     @Excel(name = "版本号")
     @ApiModelProperty("版本号")
     private Long version;
 
-
     @Excel(name = "是否启用")
     @ApiModelProperty("是否启用")
     private Integer enabled;
-
 
     @Excel(name = "排序值")
     @ApiModelProperty("排序值")

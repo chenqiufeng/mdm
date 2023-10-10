@@ -34,7 +34,6 @@ public class ${ClassName} extends ${Entity} {
 
 #foreach ($column in $columns)
     #if(!$table.isSuperColumn($column.javaField))
-
     #if($column.list)
     #set($parentheseIndex=$column.columnComment.indexOf("（"))
     #if($parentheseIndex != -1)
@@ -59,6 +58,7 @@ public class ${ClassName} extends ${Entity} {
     #end
     private $column.javaType $column.javaField;
     #end
+
 #end
 #if($table.sub)
 /** $table.subTable.functionName信息 */
