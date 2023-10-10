@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="olm.mdm.job.mapper.JobLogReportMapper">
+	
+	<resultMap id="JobLogReport" type="JobLogReport" >
+		<result column="id" property="id" />
+	    <result column="trigger_day" property="triggerDay" />
+		<result column="running_count" property="runningCount" />
+	    <result column="suc_count" property="sucCount" />
+	    <result column="fail_count" property="failCount" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		t.id,
+		t.trigger_day,
+		t.running_count,
+		t.suc_count,
+		t.fail_count
+	</sql>
+	
+	<insert id="save" parameterType="JobLogReport" useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO job_log_report (
+			`trigger_day`,
+			`running_count`,
+			`suc_count`,
+			`fail_count`
+		) VALUES (
+			#{triggerDay},
+			#{runningCount},
+			#{sucCount},
+			#{failCount}
+		);
+		<!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() 
+		</selectKey>-->
+	</insert>
+
+	<update id="update" >
+        UPDATE job_log_report
+        SET `running_count` = #{runningCount},
+        	`suc_count` = #{sucCount},
+        	`fail_count` = #{failCount}
+        WHERE `trigger_day` = #{triggerDay}
+    </update>
+
+	<select id="queryLogReport" resultMap="JobLogReport">
+		SELECT <include refid="Base_Column_List" />
+		FROM job_log_report AS t
+		WHERE t.trigger_day between #{triggerDayFrom} and #{triggerDayTo}
+		ORDER BY t.trigger_day ASC
+	</select>
+
+	<select id="queryLogReportTotal" resultMap="JobLogReport">
+		SELECT
+			SUM(running_count) running_count,
+			SUM(suc_count) suc_count,
+			SUM(fail_count) fail_count
+		FROM job_log_report AS t
+	</select>
+
+	<sql id="selectJobLogReportVo">
+		select id, trigger_day, running_count, suc_count, fail_count from job_log_report
+	</sql>
+
+	<select id="selectJobLogReportList" parameterType="JobLogReport" resultMap="JobLogReport">
+		<include refid="selectJobLogReportVo"/>
+		<where>
+			<if test="triggerDay != null "> and trigger_day = #{triggerDay}</if>
+			<if test="runningCount != null "> and running_count = #{runningCount}</if>
+			<if test="sucCount != null "> and suc_count = #{sucCount}</if>
+			<if test="failCount != null "> and fail_count = #{failCount}</if>
+		</where>
+	</select>
+
+	<select id="selectJobLogReportById" parameterType="Long" resultMap="JobLogReport">
+		<include refid="selectJobLogReportVo"/>
+		where id = #{id}
+	</select>
+
+	<insert id="insertJobLogReport" parameterType="JobLogReport" useGeneratedKeys="true" keyProperty="id">
+		insert into job_log_report
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="triggerDay != null">trigger_day,</if>
+			<if test="runningCount != null">running_count,</if>
+			<if test="sucCount != null">suc_count,</if>
+			<if test="failCount != null">fail_count,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="triggerDay != null">#{triggerDay},</if>
+			<if test="runningCount != null">#{runningCount},</if>
+			<if test="sucCount != null">#{sucCount},</if>
+			<if test="failCount != null">#{failCount},</if>
+		</trim>
+	</insert>
+
+	<update id="updateJobLogReport" parameterType="JobLogReport">
+		update job_log_report
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="triggerDay != null">trigger_day = #{triggerDay},</if>
+			<if test="runningCount != null">running_count = #{runningCount},</if>
+			<if test="sucCount != null">suc_count = #{sucCount},</if>
+			<if test="failCount != null">fail_count = #{failCount},</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteJobLogReportById" parameterType="Long">
+		delete from job_log_report where id = #{id}
+	</delete>
+
+	<delete id="deleteJobLogReportByIds" parameterType="String">
+		delete from job_log_report where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

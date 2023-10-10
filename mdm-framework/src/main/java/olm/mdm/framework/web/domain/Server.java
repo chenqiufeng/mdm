@@ -1,6 +1,7 @@
 package olm.mdm.framework.web.domain;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -189,7 +190,7 @@ public class Server
     private void setSysFiles(OperatingSystem os)
     {
         FileSystem fileSystem = os.getFileSystem();
-        List<OSFileStore> fsArray = fileSystem.getFileStores();
+        List<OSFileStore> fsArray = Arrays.asList(fileSystem.getFileStores());
         for (OSFileStore fs : fsArray)
         {
             long free = fs.getUsableSpace();

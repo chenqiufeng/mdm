@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="olm.mdm.job.mapper.JobLogMapper">
+	
+	<resultMap id="JobLog" type="JobLog" >
+		<result column="id" property="id" />
+
+		<result column="job_group" property="jobGroup" />
+		<result column="job_id" property="jobId" />
+		<result column="job_desc" property="jobDesc" />
+
+
+		<result column="executor_address" property="executorAddress" />
+		<result column="executor_handler" property="executorHandler" />
+	    <result column="executor_param" property="executorParam" />
+		<result column="executor_sharding_param" property="executorShardingParam" />
+		<result column="executor_fail_retry_count" property="executorFailRetryCount" />
+	    
+	    <result column="trigger_time" property="triggerTime" />
+	    <result column="trigger_code" property="triggerCode" />
+	    <result column="trigger_msg" property="triggerMsg" />
+	    
+	    <result column="handle_time" property="handleTime" />
+	    <result column="handle_code" property="handleCode" />
+	    <result column="handle_msg" property="handleMsg" />
+
+		<result column="alarm_status" property="alarmStatus" />
+
+		<result column="process_id" property="processId" />
+		<result column="max_id" property="maxId" />
+
+		<result column="job_desc" property="jobDesc" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		t.id,
+		t.job_group,
+		t.job_id,
+		t.executor_address,
+		t.executor_handler,
+		t.executor_param,
+		t.executor_sharding_param,
+		t.executor_fail_retry_count,
+		t.trigger_time,
+		t.trigger_code,
+		t.trigger_msg,
+		t.handle_time,
+		t.handle_code,
+		t.handle_msg,
+		t.alarm_status,
+		t.process_id,
+		t.max_id,
+		t.job_desc
+	</sql>
+	
+	<select id="pageList" resultMap="JobLog">
+		SELECT <include refid="Base_Column_List" />
+		FROM job_log AS t
+		<trim prefix="WHERE" prefixOverrides="AND | OR" >
+			<if test="jobId==0 and jobGroup gt 0">
+				AND t.job_group = #{jobGroup}
+			</if>
+			<if test="jobId gt 0">
+				AND t.job_id = #{jobId}
+			</if>
+			<if test="triggerTimeStart != null">
+				AND t.trigger_time <![CDATA[ >= ]]> #{triggerTimeStart}
+			</if>
+			<if test="triggerTimeEnd != null">
+				AND t.trigger_time <![CDATA[ <= ]]> #{triggerTimeEnd}
+			</if>
+			<if test="logStatus == 1" >
+				AND t.handle_code = 200
+			</if>
+			<if test="logStatus == 2" >
+				AND (
+					t.trigger_code NOT IN (0, 200) OR
+					t.handle_code NOT IN (0, 200)
+				)
+			</if>
+			<if test="logStatus == 3" >
+				AND t.trigger_code = 200
+				AND t.handle_code = 0
+			</if>
+		</trim>
+		ORDER BY t.trigger_time DESC
+		LIMIT #{offset}, #{pagesize}
+	</select>
+	
+	<select id="pageListCount" resultType="int">
+		SELECT count(1)
+		FROM job_log AS t
+		<trim prefix="WHERE" prefixOverrides="AND | OR" >
+			<if test="jobId==0 and jobGroup gt 0">
+				AND t.job_group = #{jobGroup}
+			</if>
+			<if test="jobId gt 0">
+				AND t.job_id = #{jobId}
+			</if>
+			<if test="triggerTimeStart != null">
+				AND t.trigger_time <![CDATA[ >= ]]> #{triggerTimeStart}
+			</if>
+			<if test="triggerTimeEnd != null">
+				AND t.trigger_time <![CDATA[ <= ]]> #{triggerTimeEnd}
+			</if>
+			<if test="logStatus == 1" >
+				AND t.handle_code = 200
+			</if>
+			<if test="logStatus == 2" >
+				AND (
+					t.trigger_code NOT IN (0, 200) OR
+					t.handle_code NOT IN (0, 200)
+				)
+			</if>
+			<if test="logStatus == 3" >
+				AND t.trigger_code = 200
+				AND t.handle_code = 0
+			</if>
+		</trim>
+	</select>
+	
+	<select id="load" parameterType="java.lang.Long" resultMap="JobLog">
+		SELECT <include refid="Base_Column_List" />
+		FROM job_log AS t
+		WHERE t.id = #{id}
+	</select>
+
+	
+	<insert id="save" parameterType="JobLog" useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO job_log (
+			`job_group`,
+			`job_id`,
+			`job_desc`,
+			`trigger_time`,
+			`trigger_code`,
+			`handle_code`
+		) VALUES (
+			#{jobGroup},
+			#{jobId},
+			#{jobDesc},
+			#{triggerTime},
+			#{triggerCode},
+			#{handleCode}
+		);
+		<!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID() 
+		</selectKey>-->
+	</insert>
+
+	<update id="updateTriggerInfo" >
+		UPDATE job_log
+		SET
+			`trigger_time`= #{triggerTime},
+			`trigger_code`= #{triggerCode},
+			`trigger_msg`= #{triggerMsg},
+			`executor_address`= #{executorAddress},
+			`executor_handler`=#{executorHandler},
+			`executor_param`= #{executorParam},
+			`executor_sharding_param`= #{executorShardingParam},
+			`executor_fail_retry_count`= #{executorFailRetryCount},
+			`max_id` = #{maxId}
+		WHERE `id`= #{id}
+	</update>
+
+	<update id="updateHandleInfo">
+		UPDATE job_log
+		SET 
+			`handle_time`= #{handleTime}, 
+			`handle_code`= #{handleCode},
+			`handle_msg`= #{handleMsg}
+		WHERE `id`= #{id}
+	</update>
+
+	<update id="updateProcessId">
+		UPDATE job_log
+		SET
+			`process_id`= #{processId}
+		WHERE `id`= #{id}
+	</update>
+	
+	<delete id="delete" >
+		delete from job_log
+		WHERE job_id = #{jobId}
+	</delete>
+
+    <!--<select id="triggerCountByDay" resultType="java.util.Map" >
+		SELECT
+			DATE_FORMAT(trigger_time,'%Y-%m-%d') triggerDay,
+			COUNT(handle_code) triggerDayCount,
+			SUM(CASE WHEN (trigger_code in (0, 200) and handle_code = 0) then 1 else 0 end) as triggerDayCountRunning,
+			SUM(CASE WHEN handle_code = 200 then 1 else 0 end) as triggerDayCountSuc
+		FROM job_log
+		WHERE trigger_time BETWEEN #{from} and #{to}
+		GROUP BY triggerDay
+		ORDER BY triggerDay
+    </select>-->
+
+    <select id="findLogReport" resultType="java.util.Map" >
+		SELECT
+			COUNT(handle_code) triggerDayCount,
+			COALESCE(SUM(CASE WHEN (trigger_code in (0, 200) and handle_code = 0) then 1 else 0 end),0) as triggerDayCountRunning,
+			COALESCE(SUM(CASE WHEN handle_code = 200 then 1 else 0 end),0) as triggerDayCountSuc
+		FROM job_log
+		WHERE trigger_time BETWEEN #{from} and #{to}
+    </select>
+
+	<select id="findClearLogIds" resultType="long" >
+		SELECT id FROM job_log
+		<trim prefix="WHERE" prefixOverrides="AND | OR" >
+			<if test="jobGroup gt 0">
+				AND job_group = #{jobGroup}
+			</if>
+			<if test="jobId gt 0">
+				AND job_id = #{jobId}
+			</if>
+			<if test="clearBeforeTime != null">
+				AND trigger_time <![CDATA[ <= ]]> #{clearBeforeTime}
+			</if>
+			<if test="clearBeforeNum gt 0">
+				AND id NOT in(
+				SELECT id FROM(
+				SELECT id FROM job_log AS t
+				<trim prefix="WHERE" prefixOverrides="AND | OR" >
+					<if test="jobGroup gt 0">
+						AND t.job_group = #{jobGroup}
+					</if>
+					<if test="jobId gt 0">
+						AND t.job_id = #{jobId}
+					</if>
+				</trim>
+				ORDER BY t.trigger_time desc
+				LIMIT 0, #{clearBeforeNum}
+				) t1
+				)
+			</if>
+		</trim>
+		order by id asc
+		LIMIT #{pagesize}
+	</select>
+
+	<delete id="clearLog" >
+		delete from job_log
+		WHERE id in
+		<foreach collection="logIds" item="item" open="(" close=")" separator="," >
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="findFailJobLogIds" resultType="long" >
+		SELECT id FROM `job_log`
+		WHERE !(
+			(trigger_code in (0, 200) and handle_code = 0)
+			OR
+			(handle_code = 200)
+		)
+		AND `alarm_status` = 0
+		ORDER BY id ASC
+		LIMIT #{pagesize}
+	</select>
+
+	<update id="updateAlarmStatus" >
+		UPDATE job_log
+		SET
+			`alarm_status` = #{newAlarmStatus}
+		WHERE `id`= #{logId} AND `alarm_status` = #{oldAlarmStatus}
+	</update>
+	<sql id="selectJobLogVo">
+		select id, job_group, job_id, job_desc, executor_address, executor_handler, executor_param, executor_sharding_param, executor_fail_retry_count, trigger_time, trigger_code, trigger_msg, handle_time, handle_code, handle_msg, alarm_status, process_id, max_id from job_log
+	</sql>
+
+	<select id="selectJobLogList" parameterType="JobLog" resultMap="JobLog">
+		<include refid="selectJobLogVo"/>
+		<where>
+			<if test="jobGroup != null "> and job_group = #{jobGroup}</if>
+			<if test="jobId != null "> and job_id = #{jobId}</if>
+			<if test="jobDesc != null  and jobDesc != ''"> and job_desc = #{jobDesc}</if>
+			<if test="executorAddress != null  and executorAddress != ''"> and executor_address = #{executorAddress}</if>
+			<if test="executorHandler != null  and executorHandler != ''"> and executor_handler = #{executorHandler}</if>
+			<if test="executorParam != null  and executorParam != ''"> and executor_param = #{executorParam}</if>
+			<if test="executorShardingParam != null  and executorShardingParam != ''"> and executor_sharding_param = #{executorShardingParam}</if>
+			<if test="executorFailRetryCount != null "> and executor_fail_retry_count = #{executorFailRetryCount}</if>
+			<if test="triggerTime != null "> and trigger_time = #{triggerTime}</if>
+			<if test="triggerCode != null "> and trigger_code = #{triggerCode}</if>
+			<if test="triggerMsg != null  and triggerMsg != ''"> and trigger_msg = #{triggerMsg}</if>
+			<if test="handleTime != null "> and handle_time = #{handleTime}</if>
+			<if test="handleCode != null "> and handle_code = #{handleCode}</if>
+			<if test="handleMsg != null  and handleMsg != ''"> and handle_msg = #{handleMsg}</if>
+			<if test="alarmStatus != null "> and alarm_status = #{alarmStatus}</if>
+			<if test="processId != null  and processId != ''"> and process_id = #{processId}</if>
+			<if test="maxId != null "> and max_id = #{maxId}</if>
+		</where>
+	</select>
+
+	<select id="selectJobLogById" parameterType="Long" resultMap="JobLog">
+		<include refid="selectJobLogVo"/>
+		where id = #{id}
+	</select>
+
+	<insert id="insertJobLog" parameterType="JobLog" useGeneratedKeys="true" keyProperty="id">
+		insert into job_log
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="jobGroup != null">job_group,</if>
+			<if test="jobId != null">job_id,</if>
+			<if test="jobDesc != null">job_desc,</if>
+			<if test="executorAddress != null">executor_address,</if>
+			<if test="executorHandler != null">executor_handler,</if>
+			<if test="executorParam != null">executor_param,</if>
+			<if test="executorShardingParam != null">executor_sharding_param,</if>
+			<if test="executorFailRetryCount != null">executor_fail_retry_count,</if>
+			<if test="triggerTime != null">trigger_time,</if>
+			<if test="triggerCode != null">trigger_code,</if>
+			<if test="triggerMsg != null">trigger_msg,</if>
+			<if test="handleTime != null">handle_time,</if>
+			<if test="handleCode != null">handle_code,</if>
+			<if test="handleMsg != null">handle_msg,</if>
+			<if test="alarmStatus != null">alarm_status,</if>
+			<if test="processId != null">process_id,</if>
+			<if test="maxId != null">max_id,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="jobGroup != null">#{jobGroup},</if>
+			<if test="jobId != null">#{jobId},</if>
+			<if test="jobDesc != null">#{jobDesc},</if>
+			<if test="executorAddress != null">#{executorAddress},</if>
+			<if test="executorHandler != null">#{executorHandler},</if>
+			<if test="executorParam != null">#{executorParam},</if>
+			<if test="executorShardingParam != null">#{executorShardingParam},</if>
+			<if test="executorFailRetryCount != null">#{executorFailRetryCount},</if>
+			<if test="triggerTime != null">#{triggerTime},</if>
+			<if test="triggerCode != null">#{triggerCode},</if>
+			<if test="triggerMsg != null">#{triggerMsg},</if>
+			<if test="handleTime != null">#{handleTime},</if>
+			<if test="handleCode != null">#{handleCode},</if>
+			<if test="handleMsg != null">#{handleMsg},</if>
+			<if test="alarmStatus != null">#{alarmStatus},</if>
+			<if test="processId != null">#{processId},</if>
+			<if test="maxId != null">#{maxId},</if>
+		</trim>
+	</insert>
+
+	<update id="updateJobLog" parameterType="JobLog">
+		update job_log
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="jobGroup != null">job_group = #{jobGroup},</if>
+			<if test="jobId != null">job_id = #{jobId},</if>
+			<if test="jobDesc != null">job_desc = #{jobDesc},</if>
+			<if test="executorAddress != null">executor_address = #{executorAddress},</if>
+			<if test="executorHandler != null">executor_handler = #{executorHandler},</if>
+			<if test="executorParam != null">executor_param = #{executorParam},</if>
+			<if test="executorShardingParam != null">executor_sharding_param = #{executorShardingParam},</if>
+			<if test="executorFailRetryCount != null">executor_fail_retry_count = #{executorFailRetryCount},</if>
+			<if test="triggerTime != null">trigger_time = #{triggerTime},</if>
+			<if test="triggerCode != null">trigger_code = #{triggerCode},</if>
+			<if test="triggerMsg != null">trigger_msg = #{triggerMsg},</if>
+			<if test="handleTime != null">handle_time = #{handleTime},</if>
+			<if test="handleCode != null">handle_code = #{handleCode},</if>
+			<if test="handleMsg != null">handle_msg = #{handleMsg},</if>
+			<if test="alarmStatus != null">alarm_status = #{alarmStatus},</if>
+			<if test="processId != null">process_id = #{processId},</if>
+			<if test="maxId != null">max_id = #{maxId},</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteJobLogById" parameterType="Long">
+		delete from job_log where id = #{id}
+	</delete>
+
+	<delete id="deleteJobLogByIds" parameterType="String">
+		delete from job_log where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+</mapper>
