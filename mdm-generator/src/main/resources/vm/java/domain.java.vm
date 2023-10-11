@@ -58,7 +58,6 @@ public class ${ClassName} extends ${Entity} {
     #end
     private $column.javaType $column.javaField;
     #end
-
 #end
 #if($table.sub)
 /** $table.subTable.functionName信息 */

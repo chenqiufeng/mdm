@@ -1,13 +1,19 @@
 package olm.mdm.datamodel.service.impl;
 
-import java.util.List;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import olm.mdm.common.utils.DateUtils;
+import olm.mdm.common.core.page.CustomPage;
+import olm.mdm.common.core.page.PageDomain;
+import olm.mdm.datamodel.domain.entity.DataModel;
+import olm.mdm.datamodel.domain.model.FindingDataModel;
+import olm.mdm.datamodel.mapper.DataModelMapper;
+import olm.mdm.datamodel.service.IDataModelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import olm.mdm.datamodel.mapper.DataModelMapper;
-import olm.mdm.datamodel.domain.entity.DataModel;
-import olm.mdm.datamodel.service.IDataModelService;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 主数据模型Service业务层处理
@@ -29,7 +35,7 @@ public class DataModelServiceImpl extends ServiceImpl<DataModelMapper, DataModel
      */
     @Override
     public DataModel selectDataModelById(Long id) {
-        return dataModelMapper.selectDataModelById(id);
+        return this.getById(id);
     }
 
     /**
@@ -43,6 +49,35 @@ public class DataModelServiceImpl extends ServiceImpl<DataModelMapper, DataModel
         return dataModelMapper.selectDataModelList(dataModel);
     }
 
+    @Override
+    public Page<DataModel> selectDataModelList(
+            PageDomain page,
+            FindingDataModel finding
+    ) {
+        QueryWrapper<DataModel> queryWrapper = new QueryWrapper<>();
+        if (finding.getEnabled() != null) {
+            queryWrapper.eq("enabled", finding.getEnabled());
+        }
+        if (finding.getCode() != null) {
+            queryWrapper.eq("code", finding.getCode());
+        }
+        if (finding.getKeyword() != null) {
+            queryWrapper.and(it -> {
+                it.like("name", finding.getKeyword())
+                        .or()
+                        .like("code", finding.getKeyword());
+
+            });
+        }
+        if (finding.getStatus() != null) {
+            queryWrapper.eq("status", finding.getStatus());
+        }
+        return this.page(
+                new CustomPage(page.getPageNum(), page.getPageSize(), page.getOrderBy(), null),
+                queryWrapper
+        );
+    }
+
     /**
      * 新增主数据模型
      *
@@ -50,9 +85,9 @@ public class DataModelServiceImpl extends ServiceImpl<DataModelMapper, DataModel
      * @return 结果
      */
     @Override
-    public int insertDataModel(DataModel dataModel) {
-        dataModel.setCreateTime(DateUtils.getNowDate());
-        return dataModelMapper.insertDataModel(dataModel);
+    public DataModel insertDataModel(DataModel dataModel) {
+        this.save(dataModel);
+        return dataModel;
     }
 
     /**
@@ -62,9 +97,9 @@ public class DataModelServiceImpl extends ServiceImpl<DataModelMapper, DataModel
      * @return 结果
      */
     @Override
-    public int updateDataModel(DataModel dataModel) {
-        dataModel.setUpdateTime(DateUtils.getNowDate());
-        return dataModelMapper.updateDataModel(dataModel);
+    public DataModel updateDataModel(DataModel dataModel) {
+        this.updateById(dataModel);
+        return dataModel;
     }
 
     /**
@@ -74,8 +109,8 @@ public class DataModelServiceImpl extends ServiceImpl<DataModelMapper, DataModel
      * @return 结果
      */
     @Override
-    public int deleteDataModelByIds(Long[] ids) {
-        return dataModelMapper.deleteDataModelByIds(ids);
+    public boolean deleteDataModelByIds(Long[] ids) {
+        return this.removeByIds(Arrays.asList(ids));
     }
 
     /**
@@ -85,7 +120,7 @@ public class DataModelServiceImpl extends ServiceImpl<DataModelMapper, DataModel
      * @return 结果
      */
     @Override
-    public int deleteDataModelById(Long id) {
-        return dataModelMapper.deleteDataModelById(id);
+    public boolean deleteDataModelById(Long id) {
+        return this.removeById(id);
     }
 }

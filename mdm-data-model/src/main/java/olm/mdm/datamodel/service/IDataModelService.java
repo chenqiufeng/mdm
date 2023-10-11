@@ -1,8 +1,12 @@
 package olm.mdm.datamodel.service;
 
-import java.util.List;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import olm.mdm.common.core.page.PageDomain;
 import olm.mdm.datamodel.domain.entity.DataModel;
+import olm.mdm.datamodel.domain.model.FindingDataModel;
+
+import java.util.List;
 
 /**
  * 主数据模型Service接口
@@ -25,7 +29,10 @@ public interface IDataModelService extends IService<DataModel> {
      * @param dataModel 主数据模型
      * @return 主数据模型集合
      */
-    public List<DataModel> selectDataModelList(DataModel dataModel);
+    List<DataModel> selectDataModelList(DataModel dataModel);
+
+
+    public Page<DataModel> selectDataModelList(PageDomain page, FindingDataModel dataModel);
 
     /**
      * 新增主数据模型
@@ -33,7 +40,7 @@ public interface IDataModelService extends IService<DataModel> {
      * @param dataModel 主数据模型
      * @return 结果
      */
-    public int insertDataModel(DataModel dataModel);
+    public DataModel insertDataModel(DataModel dataModel);
 
     /**
      * 修改主数据模型
@@ -41,7 +48,7 @@ public interface IDataModelService extends IService<DataModel> {
      * @param dataModel 主数据模型
      * @return 结果
      */
-    public int updateDataModel(DataModel dataModel);
+    public DataModel updateDataModel(DataModel dataModel);
 
     /**
      * 批量删除主数据模型
@@ -49,7 +56,7 @@ public interface IDataModelService extends IService<DataModel> {
      * @param ids 需要删除的主数据模型主键集合
      * @return 结果
      */
-    public int deleteDataModelByIds(Long[] ids);
+    public boolean deleteDataModelByIds(Long[] ids);
 
     /**
      * 删除主数据模型信息
@@ -57,5 +64,5 @@ public interface IDataModelService extends IService<DataModel> {
      * @param id 主数据模型主键
      * @return 结果
      */
-    public int deleteDataModelById(Long id);
+    public boolean deleteDataModelById(Long id);
 }

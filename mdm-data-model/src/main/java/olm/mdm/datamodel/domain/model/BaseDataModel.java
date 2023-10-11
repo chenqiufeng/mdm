@@ -2,7 +2,9 @@ package olm.mdm.datamodel.domain.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import olm.mdm.common.core.validation.CreateValidationGroup;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -14,6 +16,7 @@ public class BaseDataModel implements Serializable {
     private static final long serialVersionUID=1L;
 
     @ApiModelProperty("模型名称")
+    @NotBlank(message = "模型名称不能为空", groups = CreateValidationGroup.class)
     private String name;
 
     @ApiModelProperty("模型编码")
